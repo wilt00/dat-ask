@@ -1,0 +1,32 @@
+{
+  "name": "dat-ask",
+  "version": "0.1.0",
+  "description": "FB Messenger bot delivering DAT practice questions directly to an app near you",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vernon99/messenger-quick-start.git"
+  },
+  "keywords": [
+    "messenger",
+    "bot",
+    "quickstart"
+  ],
+  "author": "Will Toher <will.toher.0@gmail.com>",
+  "license": "MIT",
+  "homepage": "",
+  "dependencies": {
+    "request": "^2.72.0",
+    "request-promise": "*",
+    "express": "*",
+    "body-parser": "*",
+    "underscore": "*",
+    "bluebird": "*"
+  },
+  "engines": {
+    "node": "8.x"
+  }
+}

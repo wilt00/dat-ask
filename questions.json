@@ -1,0 +1,56 @@
+[
+    {
+      "id": 1,
+      "type": "text",
+      "subject": "biology",
+      "question": "Bacterial DNA is protected from the action of restriction endonucleases by:",
+      "answer": "Methylation",
+      "alts": [
+        "Acetylation",
+        "Phosphorylation",
+        "Ubiquitination",
+        "Nucleosomes",
+        "Transsubstantiation"
+      ],
+      "explanation": [
+        "The bacterial DNA contains numerous methylated adenines and cytosines. This methylation allows restriction endonucleases to discriminate between the host and viral DNA. Bacterial DNA don’t have nucleosomes and don’t coil."
+      ]
+    },
+    {
+      "id": 2,
+      "question": "Balance the following equation: Butane + O2 -> H2O + CO2",
+      "answer": "2, 13, 10, 8",
+      "alts": [
+        "1, 1, 5, 4",
+        "1, 6.5, 5, 4",
+        "1, 12, 5, 8",
+        "2, 12, 10, 8",
+        "5, 3, 7, 1"
+      ],
+      "explanation": [
+        "This question requires that you remember the formula for butane and how to create a combustion reaction. First, you have to know that butane has 4 carbons. Then you can use the (2×n)+2 rule to find the number of hydrogens – in this case 10 hydrogens.",
+        "To remember the amount of carbons in the major hydrocarbons, use the mnemonic \"Men Eat Peanut Butter\", or \"methane (1 carbon), ethane (2 carbons), propane (3 carbons), butane (4 carbons)\".",
+        "The following equation is needed for this question:\nC4H10 + O2 -> H2O + CO2\n",
+        "To balance this equation, a 2 should be placed in front of C4H10 to make it easier to balance:\n2 C4H10 + O2 -> H2O + CO2",
+        "Next, an 8 must be placed on the right side in front of CO2 to balance the carbons:\n2 C4H10 + O2 -> H2O + 8 CO2",
+        "Next, a 10 must be placed on the right side, in front of H2O to balance the hydrogens:\n2 C4H10 + O2 -> 10 H2O + 8 CO2",
+        "Finally, a 13 must be placed on the left side, in front of O2 to balance oxygen.\n\n2 C4H10 + 13 O2 -> 10 H2O + 8 CO2",
+        "Thus, the coefficients needed to balance this equation are: 2, 13, 10, 8"
+      ]
+    },
+    {
+      "id": 3,
+      "question": "What is the difference between a transport protein and a channel protein?",
+      "answer": "Transport proteins are often used by many substrates while channel proteins are generally used by ions.",
+      "alts": [
+        "Transport proteins can only function via active transport.",
+        "Channel proteins are often larger than transport proteins.",
+        "Transport proteins are often larger than channel proteins.",
+        "Transport proteins are simpler than channel proteins.",
+        "Channel proteins are only found in vertebrates."
+      ],
+      "explanation": [
+        "Transport proteins are often used by many substrates while channel proteins are generally used by ions. Both of these types of proteins have a large variety in their shapes, sizes, and complexities. Therefore, no generalization can be made about them. Many transport proteins can use passive transport as well via uniport, for example. This leaves the correct answer, where it states that channel proteins are used generally by ions. They aren’t called “ion channels” for nothing!"
+      ]
+    }
+]
