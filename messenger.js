@@ -103,7 +103,7 @@ exports.sendQuestion = function (recipientId) {
       ]
     }
   }
-  
+
   //return exports.sendTextMessage(recipientId, "Hi, {{user_first_name}}! Here's a question for you:")
   //  .then( () => callSendAPI(messageData));
   callSendAPI(messageData);
