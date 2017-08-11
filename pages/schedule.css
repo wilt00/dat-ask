@@ -1,0 +1,16 @@
+html {
+  font-size: 3em;
+}
+input[type=button] {
+  font-size: 4em;
+  color:#08233e;
+}
+input:invalid {
+  outline: 2px solid red;
+}
+input:not(:focus):invalid {
+  outline: 2px solid red;
+}
+input:focus:invalid {
+  outline: 2px solid blue;
+}

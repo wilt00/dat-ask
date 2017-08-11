@@ -24,7 +24,9 @@
     "express": "*",
     "body-parser": "*",
     "underscore": "*",
-    "bluebird": "*"
+    "bluebird": "*",
+    "mongodb": "*",
+    "mongodb-bluebird": "*"
   },
   "engines": {
     "node": "8.x"

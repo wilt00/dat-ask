@@ -1,6 +1,3 @@
-//
-// This is main file containing code implementing the Express server and functionality for the Express echo bot.
-//
 'use strict';
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -9,11 +6,34 @@ const path = require('path');
 const _ = require('underscore');
 const rp = require('request-promise');
 const Promise = require('bluebird');
+//const mongodb = require('mongodb');
+const mongo = require('mongodb-bluebird');
 
 var messengerButton = "<html><head><title>Facebook Messenger Bot</title></head><body><h1>Facebook Messenger Bot</h1>This is a bot based on Messenger Platform QuickStart. For more details, see their <a href=\"https://developers.facebook.com/docs/messenger-platform/guides/quick-start\">docs</a>.<script src=\"https://button.glitch.me/button.js\" data-style=\"glitch\"></script><div class=\"glitchButton\" style=\"position:fixed;top:20px;right:20px;\"></div></body></html>";
-var privacyPolicy = "<html><head><title>DAT Ask Privacy Policy</title></head><body><h1>DAT Ask Privacy Policy</h1>Thank you for reading our Privacy Policy. We collect the following information about you:<br><ul><li>Your Facebook ID number</li></ul><br>This information is processed on a server provided by glitch.com (<a href=\"https://glitch.com/legal/\">Privacy Policy</a>), and stored privately in a database hosted by mLab (<a href=\"https://mlab.com/company/legal/privacy/\">Privacy Policy</a>). We do not disclose this data to any other parties for any reason.</body></html>"
+//var privacyPolicy = "<html><head><title>DAT Ask Privacy Policy</title></head><body><h1>DAT Ask Privacy Policy</h1>Thank you for reading our Privacy Policy. We collect the following information about you:<br><ul><li>Your Facebook ID number</li></ul><br>This information is processed on a server provided by glitch.com (<a href=\"https://glitch.com/legal/\">Privacy Policy</a>), and stored privately in a database hosted by mLab (<a href=\"https://mlab.com/company/legal/privacy/\">Privacy Policy</a>). We do not disclose this data to any other parties for any reason.</body></html>"
 
 const questions = require('./questions.json');
+const mongoUrl = process.env.MONGO_URL;
+
+/*
+
+Question Schema:
+  id: int
+  type: string
+  subject: string
+  question: string
+  answer: string
+  alts: [string]
+  explanation: [string]
+  
+User Schema:
+  id: int
+  fb_id: string
+  questions_passed: [int]
+  questions_failed: [int]
+  last_question: int
+
+*/
 
 let app = express();
 
@@ -21,6 +41,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
 }));
+
+app.use(express.static('pages'));
 
 // Webhook validation
 app.get('/webhook', function(req, res) {
@@ -41,11 +63,12 @@ app.get('/', function(req, res) {
   res.end();
 });
 
+/*
 app.get('/privacy', function(req, res) {
   res.writeHead(200, {'Content-Type': 'text/html'});
   res.write(privacyPolicy);
   res.end();
-})
+})*/
 
 // Message processing
 app.post('/webhook', function (req, res) {
@@ -84,6 +107,9 @@ app.post('/webhook', function (req, res) {
 // Incoming events handling
 function receivedMessage(event) {
   var senderID = event.sender.id;
+  
+  
+  
   var recipientID = event.recipient.id;
   var timeOfMessage = event.timestamp;
   var message = event.message;
@@ -126,13 +152,20 @@ function receivedPostback(event) {
   // The 'payload' param is a developer-defined field which is set in a postback 
   // button for Structured Messages. 
   var payload = event.postback.payload;
+  
+  switch (payload) {
+    case 'question':
+      sendQuestion(senderID);
+      break;
+    case 'get-started':
+      //TODO
+    default:
+      sendTextMessage(senderID, "Postback called");
+  }
 
   console.log("Received postback for user %d and page %d with payload '%s' " + 
     "at %d", senderID, recipientID, payload, timeOfPostback);
 
-  // When a postback is called, we'll send a message back to the sender to 
-  // let them know it was successful
-  sendTextMessage(senderID, "Postback called");
 }
 
 //////////////////////////
@@ -154,7 +187,7 @@ function sendTextMessage(recipientId, messageText) {
 
 
 function sendTextArray(recipientId, messagesArray) {
-  Promise.each(messagesArray, (item, i, length) => {
+  return Promise.each(messagesArray, (item, i, length) => {
     return callSendAPI({
       recipient: { id: recipientId },
       message: { text: item }
@@ -231,7 +264,8 @@ function sendQuestion(recipientId) {
     }
   }
   
-  return callSendAPI(messageData);
+  return callSendAPI(recipientId, "Hi, {{user_first_name}}! Here's a question for you:")
+    .then( () => callSendAPI(messageData));
 }
 
 
@@ -240,15 +274,20 @@ function sendAnswer(recipientId, payload) {
   let payloadObj = JSON.parse(payload);
   
   if (payloadObj.answer === "?") {
-    messageString += "OK, let's go over that one. The right answer was " + payloadObj.rightAnswer;
+    messageString += "OK, let's go over that one. The right answer was " + payloadObj.rightAnswer + ". Here's why:";
   } else if (payloadObj.correct) {
-    messageString += "Yes, that's right!";
+    messageString += "Yes, that's right! Here's why:";
   } else {
-    messageString += "No, that's not right. The right answer was " + payloadObj.rightAnswer;
+    messageString += "No, that's not right. The right answer was " + payloadObj.rightAnswer + ". Here's why:";
   }
   
   sendTextMessage(recipientId, messageString)
-    .then(() => sendTextArray(recipientId, questions[payloadObj.question].explanation));
+    .then(() => sendTextArray(recipientId, questions[payloadObj.question].explanation))
+    .then(() => {
+      if(!payloadObj.correct) {
+        sendTextMessage(recipientId, "I'll ask you that question again sometime.");
+      }
+    });
 }
 
 
@@ -270,6 +309,21 @@ function callSendAPI(messageData) {
   });
 }
 
+///
+// Database Helpers
+///
+
+function getUser(userId) {
+  return mongo.connect(mongoUrl).then((db) => {
+    const users = db.collection('users');
+    return users.find({ fb_id: userId }).then((users) => {
+      if (users === {}) {
+        
+      }
+    })
+  })
+}
+
 
 // Set Express to listen out for HTTP requests
 var server = app.listen(process.env.PORT || 3000, function () {
@@ -287,3 +341,4 @@ var server = app.listen(process.env.PORT || 3000, function () {
 // - Handle manual answer submissions?
 // - Support users - create db, record questions correct & incorrect
 // - Set up proper logging
+// - Set up scheduled questions
