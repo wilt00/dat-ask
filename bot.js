@@ -57,7 +57,7 @@ app.get('/', (req, res) => {
 });
 
 
-app.post('/schedule', (req, res) => {//TODO})
+app.post('/schedule', (req, res) => {/*TODO*/})
 
 
 // Message processing

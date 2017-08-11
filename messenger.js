@@ -12,7 +12,7 @@ const questions = require('./questions.json');
 
 
 
-function sendTextMessage(recipientId, messageText) {
+exports.sendTextMessage = function (recipientId, messageText) {
   var messageData = {
     recipient: {
       id: recipientId
@@ -26,7 +26,7 @@ function sendTextMessage(recipientId, messageText) {
 }
 
 
-function sendTextArray(recipientId, messagesArray) {
+exports.sendTextArray = function (recipientId, messagesArray) {
   return Promise.each(messagesArray, (item, i, length) => {
     return callSendAPI({
       recipient: { id: recipientId },
@@ -61,7 +61,7 @@ function prepQuestion(qId) {
 }
 
 
-function sendQuestion(recipientId) {
+exports.sendQuestion = function (recipientId) {
   var qNum = Math.floor(Math.random() * 3);
   var qData = prepQuestion(qNum);
   
@@ -103,13 +103,14 @@ function sendQuestion(recipientId) {
       ]
     }
   }
-  
-  return callSendAPI(recipientId, "Hi, {{user_first_name}}! Here's a question for you:")
-    .then( () => callSendAPI(messageData));
+
+  //return exports.sendTextMessage(recipientId, "Hi, {{user_first_name}}! Here's a question for you:")
+  //  .then( () => callSendAPI(messageData));
+  callSendAPI(messageData);
 }
 
 
-function sendAnswer(recipientId, payload) {
+exports.sendAnswer = function (recipientId, payload) {
   let messageString = "";
   let payloadObj = JSON.parse(payload);
   
@@ -121,11 +122,11 @@ function sendAnswer(recipientId, payload) {
     messageString += "No, that's not right. The right answer was " + payloadObj.rightAnswer + ". Here's why:";
   }
   
-  sendTextMessage(recipientId, messageString)
-    .then(() => sendTextArray(recipientId, questions[payloadObj.question].explanation))
+  exports.sendTextMessage(recipientId, messageString)
+    .then(() => exports.sendTextArray(recipientId, questions[payloadObj.question].explanation))
     .then(() => {
       if(!payloadObj.correct) {
-        sendTextMessage(recipientId, "I'll ask you that question again sometime.");
+        exports.sendTextMessage(recipientId, "I'll ask you that question again sometime.");
       }
     });
 }
@@ -146,5 +147,6 @@ function callSendAPI(messageData) {
   }).catch((err) => {
       console.error("Unable to send message.");
       console.error(err);
+      console.error(messageData);
   });
 }
