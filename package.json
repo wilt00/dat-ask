@@ -26,7 +26,8 @@
     "underscore": "*",
     "bluebird": "*",
     "mongodb": "*",
-    "mongodb-bluebird": "*"
+    "mongodb-bluebird": "*",
+    "cheerio": "*"
   },
   "engines": {
     "node": "8.x"

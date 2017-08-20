@@ -1,32 +1,16 @@
 'use strict';
 const express = require('express');
 const bodyParser = require('body-parser');
+const util = require('util');
 //const Promise = require('bluebird');
 
 const messenger = require('./messenger.js');
 const data = require('./data.js');
+const scraper = require('./scraper.js');
 
-var messengerButton = "<html><head><title>Facebook Messenger Bot</title></head><body><h1>Facebook Messenger Bot</h1>This is a bot based on Messenger Platform QuickStart. For more details, see their <a href=\"https://developers.facebook.com/docs/messenger-platform/guides/quick-start\">docs</a>.<script src=\"https://button.glitch.me/button.js\" data-style=\"glitch\"></script><div class=\"glitchButton\" style=\"position:fixed;top:20px;right:20px;\"></div></body></html>";
+const messengerButton = "<html><head><title>Facebook Messenger Bot</title></head><body><h1>Facebook Messenger Bot</h1>This is a bot based on Messenger Platform QuickStart. For more details, see their <a href=\"https://developers.facebook.com/docs/messenger-platform/guides/quick-start\">docs</a>.<script src=\"https://button.glitch.me/button.js\" data-style=\"glitch\"></script><div class=\"glitchButton\" style=\"position:fixed;top:20px;right:20px;\"></div></body></html>";
 
-/*
-Question Schema:
-  id: int
-  type: string
-  subject: string
-  question: string
-  answer: string
-  alts: [string]
-  explanation: [string]
-  
-User Schema:
-  id: int
-  fb_id: string
-  questions_passed: [int]
-  questions_failed: [int]
-  last_question: int
-*/
-
-let app = express();
+const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -56,6 +40,33 @@ app.get('/', (req, res) => {
   res.end();
 });
 
+app.get('/check', (req, res) => {
+  scraper.doScrape();
+  res.writeHead(200);
+  res.end();
+});
+
+app.get('/morningping', (req, res) => {
+  scraper.doScrape();
+  res.writeHead(200);
+  messenger.sendTextMessage("1453719984711845", "Good Morning, Karima!");
+  messenger.sendQuestion("1453719984711845");
+  res.end();
+});
+
+app.get('/test', (req, res) => {
+  res.writeHead(200);
+  data.getNextQuestion("1467800183298735").then((q) => {
+    res.write(JSON.stringify(q));
+    res.end();
+  });
+});
+
+
+app.post('/questionform', (req, res) => {
+  
+});
+
 
 app.post('/schedule', (req, res) => {/*TODO*/})
 
@@ -63,15 +74,15 @@ app.post('/schedule', (req, res) => {/*TODO*/})
 // Message processing
 app.post('/webhook', function (req, res) {
   console.log(req.body);
-  var data = req.body;
+  const data = req.body;
 
   // Make sure this is a page subscription
   if (data.object === 'page') {
     
     // Iterate over each entry - there may be multiple if batched
     data.entry.forEach(function(entry) {
-      var pageID = entry.id;
-      var timeOfEvent = entry.time;
+      const pageID = entry.id;
+      const timeOfEvent = entry.time;
 
       // Iterate over each messaging event
       entry.messaging.forEach(function(event) {
@@ -97,22 +108,26 @@ app.post('/webhook', function (req, res) {
 
 // Incoming events handling
 function receivedMessage(event) {
-  var senderID = event.sender.id;
+  const senderID = event.sender.id;
   
   // Get user
+  const user = data.getUser(senderID).then((user) => {
+    console.log("Bot: User: " + user);
+    console.log(util.inspect(user, {showHidden: false, depth: null}))
+  });
   
-  var recipientID = event.recipient.id;
-  var timeOfMessage = event.timestamp;
-  var message = event.message;
+  const recipientID = event.recipient.id;
+  const timeOfMessage = event.timestamp;
+  const message = event.message;
 
   console.log("Received message for user %d and page %d at %d with message:", 
     senderID, recipientID, timeOfMessage);
-  console.log(JSON.stringify(message));
+  console.log("Message: " + JSON.stringify(message));
 
-  var messageId = message.mid;
+  const messageId = message.mid;
 
-  var messageText = message.text.toLowerCase();
-  var messageAttachments = message.attachments;
+  const messageText = message.text.toLowerCase();
+  const messageAttachments = message.attachments;
   
   if (message.quick_reply) {
     messenger.sendAnswer(senderID, message.quick_reply.payload);
@@ -137,13 +152,13 @@ function receivedMessage(event) {
 
 
 function receivedPostback(event) {
-  var senderID = event.sender.id;
-  var recipientID = event.recipient.id;
-  var timeOfPostback = event.timestamp;
+  const senderID = event.sender.id;
+  const recipientID = event.recipient.id;
+  const timeOfPostback = event.timestamp;
 
   // The 'payload' param is a developer-defined field which is set in a postback 
   // button for Structured Messages. 
-  var payload = event.postback.payload;
+  const payload = event.postback.payload;
   
   switch (payload) {
     case 'question':
@@ -162,7 +177,7 @@ function receivedPostback(event) {
 
 
 // Set Express to listen out for HTTP requests
-var server = app.listen(process.env.PORT || 3000, function () {
+const server = app.listen(process.env.PORT || 3000, function () {
   console.log("Listening on port %s", server.address().port);
 });
 

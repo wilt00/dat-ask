@@ -1,0 +1,52 @@
+<html>
+  <head>
+    <title>Add A Question</title>
+    <link rel="stylesheet" href="questionform.css">
+  </head>
+  <body>
+    <form action="/questionform" method="post">
+      <div>
+        <fieldset>
+          <legend>Question</legend>
+          <input type="number" id="hour" value="8" min="1" max="12" step="1">
+          <span> : </span>
+          <input type="number" id="minute" value="00" min="0" max="59" step="1">
+
+          <input type="radio" id="AMPMChoice1" name="ampm" value="am" checked>
+          <label for="AMPMChoice1">AM</label>
+          <input type="radio" id="AMPMChoice2" name="ampm" value="pm">
+          <label for="AMPMChoice2">PM</label>
+        </fieldset>
+      </div>
+      <div>
+        <fieldset>
+          <legend>Active Days</legend>
+        
+          <input type="checkbox" id="dayMonChk" name="day" value="mon" checked>
+          <label for="dayMonChk">Mon</label>
+
+          <input type="checkbox" id="dayTueChk" name="day" value="tue" checked>
+          <label for="dayMonChk">Tue</label>
+
+          <input type="checkbox" id="dayWedChk" name="day" value="wed" checked>
+          <label for="dayMonChk">Wed</label>
+
+          <input type="checkbox" id="dayThuChk" name="day" value="thu" checked>
+          <label for="dayMonChk">Thu</label>
+
+          <input type="checkbox" id="dayFriChk" name="day" value="fri" checked>
+          <label for="dayFriChk">Fri</label>
+
+          <input type="checkbox" id="daySatChk" name="day" value="sat" checked>
+          <label for="dayMonChk">Sat</label>
+
+          <input type="checkbox" id="daySunChk" name="day" value="sun" checked>
+          <label for="dayMonChk">Sun</label>
+        </fieldset>
+      </div>
+      <div>
+        <input type="submit" value="Save">
+      </div>
+    </form>
+  </body>
+</html>
